@@ -109,70 +109,38 @@ import type {
 const BASE_URL = import.meta.env.VITE_BASE_URL
 const API_PATH = import.meta.env.VITE_API_PATH
 
-//  baseURL 只放 domain
 const productApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: `${BASE_URL}/v2/api/${API_PATH}`,
 })
 
-// --- Request Interceptor ---
-productApi.interceptors.request.use(
-  (request) => {
-    const token = document.cookie.replace(
-      /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
-      '$1',
-    )
-
-    if (token) {
-      request.headers['Authorization'] = token
-    }
-
-    return request
-  },
-  (error) => Promise.reject(error),
-)
-
-// --- Response Interceptor ---
-productApi.interceptors.response.use(
-  (response) => Promise.resolve(response),
-  (error) => Promise.reject(error.response.data),
-)
-
-// ==========================================
-// API
-// ==========================================
-
-// 1️⃣ 取得商品列表
+// 取得商品列表
 export const apiGetProducts = (
-  params: { page?: string; category?: string },
+  params: { page?: string; category?: string }
 ): Promise<AxiosResponse<GetProductsResponse>> =>
-  productApi.get(`/v2/api/${API_PATH}/admin/products`, { params })
+  productApi.get('/admin/products', { params })
 
-// 2️⃣ 新增商品
+// 新增商品
 export const apiCreateProduct = (
-  params: CreateProductParams,
+  params: CreateProductParams
 ): Promise<AxiosResponse<CreateProductResponse>> =>
-  productApi.post(`/v2/api/${API_PATH}/admin/product`, {
-    data: params,
-  })
+  productApi.post('/admin/product', { data: params })
 
-// 3️⃣ 編輯商品
+// 編輯商品
 export const apiEditProduct = (
-  params: EditProductParams,
+  params: EditProductParams
 ): Promise<AxiosResponse<EditProductResponse>> => {
   const { id, data } = params
-  return productApi.put(`/v2/api/${API_PATH}/admin/product/${id}`, {
-    data,
-  })
+  return productApi.put(`/admin/product/${id}`, { data })
 }
 
-// 4️⃣ 刪除商品
+// 刪除商品
 export const apiDeleteProduct = (
-  productId: string,
+  productId: string
 ): Promise<AxiosResponse<DeleteProductResponse>> =>
-  productApi.delete(`/v2/api/${API_PATH}/admin/product/${productId}`)
+  productApi.delete(`/admin/product/${productId}`)
 
-// 5️⃣ 上傳圖片
+// 上傳圖片
 export const apiUploadImage = async (
-  file: FormData,
+  file: FormData
 ): Promise<AxiosResponse<UploadImageResponse>> =>
-  productApi.post(`/v2/api/${API_PATH}/admin/upload`, file)
+  productApi.post('/admin/upload', file)
