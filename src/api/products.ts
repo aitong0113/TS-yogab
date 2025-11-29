@@ -1,3 +1,4 @@
+/*
 // ==========================================
 // TypeScript 練習題目 - 商品 API 請求函式
 // ==========================================
@@ -89,4 +90,89 @@ export const apiDeleteProduct = (productId) =>
 // - 回傳值是 Promise<AxiosResponse<UploadImageResponse>>
 // - 這是一個 async 函式
 export const apiUploadImage = async (file) =>
+  productApi.post(`/v2/api/${API_PATH}/admin/upload`, file)
+
+----------------------------------------以上為老師題目*/
+
+
+import axios, { type AxiosResponse } from 'axios'
+import type {
+  CreateProductParams,
+  CreateProductResponse,
+  EditProductParams,
+  EditProductResponse,
+  DeleteProductResponse,
+  GetProductsResponse,
+  UploadImageResponse,
+} from '@/types/product'
+
+const BASE_URL = import.meta.env.VITE_BASE_URL
+const API_PATH = import.meta.env.VITE_API_PATH
+
+//  baseURL 只放 domain
+const productApi = axios.create({
+  baseURL: BASE_URL,
+})
+
+// --- Request Interceptor ---
+productApi.interceptors.request.use(
+  (request) => {
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
+      '$1',
+    )
+
+    if (token) {
+      request.headers['Authorization'] = token
+    }
+
+    return request
+  },
+  (error) => Promise.reject(error),
+)
+
+// --- Response Interceptor ---
+productApi.interceptors.response.use(
+  (response) => Promise.resolve(response),
+  (error) => Promise.reject(error.response.data),
+)
+
+// ==========================================
+// API
+// ==========================================
+
+// 1️⃣ 取得商品列表
+export const apiGetProducts = (
+  params: { page?: string; category?: string },
+): Promise<AxiosResponse<GetProductsResponse>> =>
+  productApi.get(`/v2/api/${API_PATH}/admin/products`, { params })
+
+// 2️⃣ 新增商品
+export const apiCreateProduct = (
+  params: CreateProductParams,
+): Promise<AxiosResponse<CreateProductResponse>> =>
+  productApi.post(`/v2/api/${API_PATH}/admin/product`, {
+    data: params,
+  })
+
+// 3️⃣ 編輯商品
+export const apiEditProduct = (
+  params: EditProductParams,
+): Promise<AxiosResponse<EditProductResponse>> => {
+  const { id, data } = params
+  return productApi.put(`/v2/api/${API_PATH}/admin/product/${id}`, {
+    data,
+  })
+}
+
+// 4️⃣ 刪除商品
+export const apiDeleteProduct = (
+  productId: string,
+): Promise<AxiosResponse<DeleteProductResponse>> =>
+  productApi.delete(`/v2/api/${API_PATH}/admin/product/${productId}`)
+
+// 5️⃣ 上傳圖片
+export const apiUploadImage = async (
+  file: FormData,
+): Promise<AxiosResponse<UploadImageResponse>> =>
   productApi.post(`/v2/api/${API_PATH}/admin/upload`, file)

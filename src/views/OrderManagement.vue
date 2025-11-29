@@ -1,3 +1,4 @@
+<!--
 <script setup lang="ts">
 import { apiDeleteOrder, apiGetOrders } from '@/api/order'
 import DeleteModal from '@/components/DeleteModal.vue'
@@ -168,3 +169,83 @@ const deleteOrder = async (orderId: string) => {
 </template>
 
 <style lang="scss" scoped></style>
+
+以上為老師的題目-->
+
+
+<script setup lang="ts">
+import { apiDeleteOrder, apiGetOrders } from '@/api/order' // 匯入訂單 API
+import DeleteModal from '@/components/DeleteModal.vue'
+import OrderDetailModal from '@/components/OrderDetailModal.vue'
+import type { Order, Pagination } from '@/types/order' // 匯入訂單與分頁型別
+import { onMounted, ref, useTemplateRef } from 'vue'
+
+const orderDetailModalRef =
+  useTemplateRef<InstanceType<typeof OrderDetailModal>>('orderDetailModalRef') // 補元件實例型別，模板 ref 才能被 TS 正確推斷
+const deleteModalRef =
+  useTemplateRef<InstanceType<typeof DeleteModal>>('deleteModalRef') // 補元件型別
+
+const tempOrder = ref<Order>({
+  create_at: 0,
+  id: '',
+  is_paid: false,
+  total: 0,
+  message: '',
+  products: {},
+  user: {
+    address: '',
+    email: '',
+    name: '',
+    tel: '',
+  },
+  num: 0,
+}) // 指定為 Order，初始物件要符合型別規格
+
+const currentPage = ref<string>('1') // 明確定義字串型別
+
+const orders = ref<Order[]>([]) // 訂單列表是 Order 陣列
+
+const pagination = ref<Pagination>({
+  total_pages: 0,
+  current_page: 0,
+  has_pre: false,
+  has_next: false,
+  category: '',
+}) // 分頁資料使用 Pagination 型別
+
+const getOrders = async (): Promise<void> => { // async → 回傳 Promise<void>
+  try {
+    const res = await apiGetOrders({
+      page: currentPage.value,
+    })
+
+    orders.value = res.data.orders
+    pagination.value = res.data.pagination
+  } catch (error) {
+    alert('取得訂單列表失敗')
+  }
+}
+
+onMounted(() => {
+  getOrders()
+})
+
+const openModal = (order: Order): void => { // 傳入 Order，沒有回傳值
+  tempOrder.value = order
+  orderDetailModalRef.value?.openModal()
+}
+
+const openDeleteModal = (orderId: string): void => { // orderId 是 string，沒有回傳值
+  deleteModalRef.value?.openModal(() => deleteOrder(orderId))
+}
+
+const deleteOrder = async (orderId: string): Promise<void> => { // 明確標註 Promise<void>
+  try {
+    await apiDeleteOrder(orderId)
+  } catch (error) {
+    alert('刪除訂單失敗')
+  } finally {
+    getOrders()
+  }
+}
+</script>

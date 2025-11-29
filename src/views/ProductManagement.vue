@@ -1,3 +1,4 @@
+
 <!-- 
 ==========================================
 TypeScript 練習題目 - 商品管理頁面
@@ -10,7 +11,7 @@ TypeScript 練習題目 - 商品管理頁面
 
 📝 練習說明：
 請為以下 script setup 區塊加上正確的 TypeScript 型別註解
--->
+
 
 <script setup lang="ts">
 // TODO: 匯入 API 函式
@@ -222,3 +223,88 @@ const handleDeleteProduct = async (productId) => {
 </template>
 
 <style lang="scss" scoped></style>
+
+以上為老師題目-->
+
+<script setup lang="ts">
+import { apiDeleteProduct, apiGetProducts } from '@/api/products' // 匯入 API
+import DeleteModal from '@/components/DeleteModal.vue'
+import ProductModal from '@/components/ProductModal.vue'
+
+import type { Pagination, ProductData } from '@/types/product' // 匯入商品與 Pagination 型別
+import { onMounted, ref, useTemplateRef } from 'vue'
+
+const productModalRef =
+  useTemplateRef<InstanceType<typeof ProductModal>>('productModalRef') // 模板 ref 要指定元件實例的型別
+const deleteModalRef =
+  useTemplateRef<InstanceType<typeof DeleteModal>>('deleteModalRef') 
+
+const currentPage = ref<string>('1') // 頁碼明確定義為字串
+const products = ref<ProductData[]>([]) // 商品列表是 ProductData 陣列
+const pagination = ref<Pagination>({
+  total_pages: 0,
+  current_page: 0,
+  has_pre: false,
+  has_next: false,
+  category: '',
+}) // 分頁資訊使用 Pagination 型別初始化
+
+const getProducts = async (): Promise<void> => { // async 函式需標註 Promise<void>
+  try {
+    const res = await apiGetProducts({
+      page: currentPage.value,
+    })
+    products.value = res.data.products
+    pagination.value = res.data.pagination
+  } catch {
+    alert('取得產品列表失敗')
+  }
+}
+
+onMounted(() => {
+  getProducts()
+})
+
+const getInitialProductData = (): ProductData => ({ // 初始商品結構需符合 ProductData 型別
+  id: '',
+  title: '',
+  origin_price: 0,
+  price: 0,
+  category: '',
+  unit: '',
+  num: 0,
+  content: '',
+  description: '',
+  is_enabled: 1,
+  imageUrl: '',
+  imagesUrl: [''],
+})
+
+const tempProduct = ref<ProductData>(getInitialProductData()) // 單筆商品資料，使用 ProductData
+
+const openModal = (product: ProductData | null = null): void => { // product 可為 null（新增）或資料（編輯）
+  if (product) {
+    tempProduct.value = {
+      ...product,
+      imagesUrl: product.imagesUrl ? [...product.imagesUrl] : [''], // 展開避免原始物件被修改
+    }
+  }
+  productModalRef.value?.openModal()
+}
+
+const openDeleteModal = (productId: string): void => { // 刪除時只需 string 型別的 id
+  deleteModalRef.value?.openModal(() => handleDeleteProduct(productId))
+}
+
+const handleDeleteProduct = async (productId: string): Promise<void> => { // async + Promise<void>
+  try {
+    await apiDeleteProduct(productId)
+  } catch {
+    alert('刪除商品失敗')
+  } finally {
+    getProducts()
+  }
+}
+</script>
+
+

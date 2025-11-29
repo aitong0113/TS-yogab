@@ -1,3 +1,5 @@
+
+/*
 // ==========================================
 // TypeScript 練習題目 - 商品相關型別定義
 // ==========================================
@@ -126,4 +128,88 @@ export type UploadImageResponse {
   // 在這裡加上型別定義，將 unknown 替換為正確的型別
   success: unknown
   imageUrl: unknown
+}
+
+
+-------------------------------以上為老師題目*/
+
+
+// 商品資料型別
+export interface ProductData {
+  id: string
+  title: string
+  category: string
+  origin_price: number
+  price: number
+  unit: string
+  description: string
+  content: string
+  is_enabled: number
+  imageUrl: string
+  imagesUrl: string[]
+  num: number
+}
+
+// 分頁資訊型別
+export interface Pagination {
+  total_pages: number
+  current_page: number
+  has_pre: boolean
+  has_next: boolean
+  category: string
+}
+
+// 建立商品參數型別（不含 id、num）
+export interface CreateProductParams {
+  title: string
+  category: string
+  origin_price: number
+  price: number
+  unit: string
+  description: string
+  content: string
+  is_enabled: number
+  imageUrl: string
+  imagesUrl: string[]
+}
+
+// 編輯商品參數型別（需要 id + data）
+export interface EditProductParams {
+  id: string
+  data: {
+    title: string
+    category: string
+    origin_price: number
+    price: number
+    unit: string
+    description: string
+    content: string
+    is_enabled: number
+    imageUrl: string
+    imagesUrl: string[]
+  }
+}
+
+// 取得商品列表回應型別
+export interface GetProductsResponse {
+  success: boolean
+  products: ProductData[]
+  pagination: Pagination
+  messages: string[]
+}
+
+// 訊息回應型別 (新增 / 編輯 / 刪除)
+export interface MessageResponse {
+  success: boolean
+  message: string
+}
+
+export type CreateProductResponse = MessageResponse
+export type EditProductResponse = MessageResponse
+export type DeleteProductResponse = MessageResponse
+
+// 圖片上傳回應型別
+export interface UploadImageResponse {
+  success: boolean
+  imageUrl: string
 }

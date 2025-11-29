@@ -10,7 +10,7 @@ TypeScript 練習題目 - 商品彈窗組件
 
 📝 練習說明：
 請為以下 script setup 區塊加上正確的 TypeScript 型別註解
--->
+
 
 <script setup lang="ts">
 // TODO: 匯入 API 函式
@@ -342,3 +342,140 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped></style>
+
+
+以上為老師的題目-->
+
+
+<script setup lang="ts">
+// ------------------------------------------
+// 1️⃣ 匯入 API 函式（補上老師要求的 import）
+// ------------------------------------------
+import { apiCreateProduct, apiEditProduct } from '@/api/products'
+
+import { useImageUpload } from '@/composable/useImageUpload'
+import { useProductForm } from '@/composable/useProductData'
+
+// ------------------------------------------
+// 2️⃣ 匯入型別
+// ------------------------------------------
+import type { ProductData } from '@/types/product'
+
+import { Modal } from 'bootstrap'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+
+// ------------------------------------------
+// 3️⃣ 定義 Props 型別
+// ------------------------------------------
+interface ProductModalProps {
+  product: ProductData
+}
+
+// ------------------------------------------
+// 4️⃣ 使用 defineProps（補上型別）
+// ------------------------------------------
+const { product } = defineProps<ProductModalProps>()
+
+// ------------------------------------------
+const emit = defineEmits(['get-products'])
+
+// ------------------------------------------
+// 5️⃣ modalRef 加上 HTMLElement 型別
+// ------------------------------------------
+const modalRef = useTemplateRef<HTMLElement>('modalRef')
+
+// ------------------------------------------
+// 6️⃣ modal 加上明確型別：Modal | null
+// ------------------------------------------
+let modal: Modal | null = null
+
+onMounted(() => {
+  if (modalRef.value) {
+    modal = new Modal(modalRef.value)
+  }
+})
+
+onUnmounted(() => {
+  modal?.dispose()
+})
+
+const openModal = () => modal?.show()
+const closeModal = () => modal?.hide()
+
+// ------------------------------------------
+// 7️⃣ composable 型別已內建，不用額外補
+// ------------------------------------------
+const { form, formTitle, loadProduct } = useProductForm()
+
+const {
+  uploadedImages,
+  imageUrlInput,
+  fileToUpload,
+  fileNameDisplay,
+  isUploading,
+  addImageUrl,
+  triggerUpload,
+  handleFileChange,
+  deleteImage,
+  resetImages,
+} = useImageUpload()
+
+// ------------------------------------------
+// 8️⃣ 監聽 product：TS 會自動推斷 newProduct 是 ProductData
+// ------------------------------------------
+watch(
+  () => product,
+  (newProduct) => {
+    if (newProduct.id) {
+      loadProduct(newProduct)
+      resetImages([newProduct.imageUrl, ...newProduct.imagesUrl])
+    } else {
+      loadProduct(null)
+      resetImages([])
+    }
+  },
+  { immediate: true, deep: true },
+)
+
+const isEditMode = computed(() => Boolean(product.id))
+const isLoading = ref(false)
+
+// ------------------------------------------
+// 9️⃣ 儲存商品：完全不動老師原邏輯，只補 TS 保證機制
+// ------------------------------------------
+const saveProduct = async () => {
+  const [imageUrl, ...imagesUrl] = uploadedImages.value
+
+  const { id, ...productData } = form.value
+
+  productData.imageUrl = imageUrl
+  productData.imagesUrl = imagesUrl
+
+  const data = {
+    ...productData,
+    imagesUrl: productData.imagesUrl ? productData.imagesUrl : [''],
+  }
+
+  isLoading.value = true
+
+  try {
+    if (isEditMode.value && id) {
+      await apiEditProduct({ data, id })
+    } else {
+      await apiCreateProduct(data)
+    }
+    resetImages([])
+    closeModal()
+  } catch (error) {
+    alert('新增/編輯產品失敗')
+  } finally {
+    isLoading.value = false
+    emit('get-products')
+  }
+}
+
+defineExpose({
+  openModal,
+  closeModal,
+})
+</script>
