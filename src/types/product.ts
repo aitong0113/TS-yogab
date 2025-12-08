@@ -235,8 +235,6 @@ export type GetProductsResponse = {
 // TODO: 定義訊息回應基本型別
 // 提示：包含 success (布林值) 和 message (字串)
 type MessageResponse =  {
-  pagination: Pagination | { total_pages: number; current_page: number; has_pre: boolean; has_next: boolean; category: string }
-  products: ProductData[] | { id: string; title: string; category: string; origin_price: number; price: number; unit: string; description: string; content: string; is_enabled: number; imageUrl: string; imagesUrl: string[]; num: number }[]
   // 在這裡加上型別定義，將 unknown 替換為正確的型別
   success: boolean
   message: string

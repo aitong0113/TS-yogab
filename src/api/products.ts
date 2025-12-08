@@ -97,7 +97,7 @@ export const apiUploadImage = async (file) =>
 
 // TODO: 匯入型別定義
 // 提示：需要匯入 CreateProductParams, CreateProductResponse 等型別
-import type { CreateProductParams, CreateProductResponse, EditProductParams, EditProductResponse, DeleteProductResponse, UploadImageResponse } from '@/types/product'
+import type { CreateProductParams, CreateProductResponse, EditProductParams, EditProductResponse, DeleteProductResponse, UploadImageResponse, GetProductsResponse } from '@/types/product'
 import axios from 'axios'
 import type { AxiosResponse } from 'axios' //匯入AxiosResponse
 
@@ -138,7 +138,7 @@ productApi.interceptors.response.use(
 // - 回傳值是 Promise<AxiosResponse<GetProductsResponse>>
 export const apiGetProducts = (
   params: { page?: string; category?: string }
-): Promise<AxiosResponse<CreateProductResponse>> =>
+): Promise<AxiosResponse<GetProductsResponse>> => 
   productApi.get(`/v2/api/${API_PATH}/admin/products`, {
     params,
   })
