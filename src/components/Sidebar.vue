@@ -7,6 +7,7 @@ import { sidebarData } from '@/constants'
     <h4 class="text-white text-center mb-5">植感生活</h4>
     <nav class="nav nav-pills flex-column">
       <RouterLink
+      :key="sidebarItem.path"
         v-for="sidebarItem in sidebarData"
         :to="sidebarItem.path"
         activeClass="active"

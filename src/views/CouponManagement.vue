@@ -4,6 +4,7 @@ import DeleteModal from '@/components/DeleteModal.vue'
 import type { CouponData, Pagination } from '@/types/coupon'
 import { formatDate } from '@/utils/date'
 import { onMounted, ref, useTemplateRef } from 'vue'
+import CouponModal from '@/components/CouponModal.vue'
 
 const initialFormData: CouponData = {
   id: '',
@@ -44,7 +45,7 @@ onMounted(() => {
   getCoupons()
 })
 
-// const couponModalRef = useTemplateRef('couponModalRef')
+const couponModalRef = useTemplateRef<InstanceType<typeof CouponModal>>('couponModalRef')
 const deleteModalRef = useTemplateRef<InstanceType<typeof DeleteModal>>('deleteModalRef')
 
 const isLoading = ref<boolean>(false)
@@ -56,31 +57,31 @@ const openModal = (coupon?: CouponData) => {
     form.value = initialFormData
   }
 
-  // couponModalRef.value?.openModal(async (couponData: unknown) => {
-  //   isLoading.value = true
+  couponModalRef.value?.openModal(async (couponData: CouponData) => {
+    isLoading.value = true
 
-  //   try {
-  //     if (coupon) {
-  //       await apiEditCoupon({
-  //         id: couponData.id,
-  //         data: {
-  //           ...couponData,
-  //           is_enabled: Number(couponData.is_enabled),
-  //         },
-  //       })
-  //     } else {
-  //       await apiCreateCoupon({
-  //         ...couponData,
-  //         is_enabled: Number(couponData.is_enabled),
-  //       })
-  //     }
-  //   } catch (error) {
-  //     alert('新增/編輯優惠券失敗')
-  //   } finally {
-  //     isLoading.value = false
-  //     getCoupons()
-  //   }
-  // })
+    try {
+      if (coupon) {
+        await apiEditCoupon({
+          id: couponData.id,
+          data: {
+            ...couponData,
+            is_enabled: Number(couponData.is_enabled),
+          },
+        })
+      } else {
+        await apiCreateCoupon({
+          ...couponData,
+          is_enabled: Number(couponData.is_enabled),
+        })
+      }
+    } catch (error) {
+      alert('新增/編輯優惠券失敗')
+    } finally {
+      isLoading.value = false
+      getCoupons()
+    }
+  })
 }
 
 const openDeleteModal = (couponId: string) => {
@@ -202,7 +203,7 @@ const deleteCoupon = async (couponId: string) => {
     </div>
   </div>
 
-  <!-- <CouponModal ref="couponModalRef" :coupon="form" :is-loading="isLoading" /> -->
+  <CouponModal ref="couponModalRef" :coupon="form" :is-loading="isLoading" />
   <DeleteModal ref="deleteModalRef" title="刪除訂單" content="確定要刪除該優惠券嗎？" />
 </template>
 
