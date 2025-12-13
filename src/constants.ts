@@ -1,5 +1,9 @@
 export const sidebarData = [
   {
+    path: '/',
+    name: '後台首頁',
+  },
+  {
     path: '/product-management',
     name: '商品管理',
   },

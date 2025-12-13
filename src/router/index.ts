@@ -10,6 +10,11 @@ const router = createRouter({
       component: Dashboard,
       children: [
         {
+          path: '',
+          name: 'home',
+          component: () => import('@/views/HomeView.vue'),
+        },
+        {
           path: '/product-management',
           name: 'product-management',
           component: () => import('@/views/ProductManagement.vue'),
