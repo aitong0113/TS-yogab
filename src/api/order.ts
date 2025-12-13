@@ -1,42 +1,65 @@
-import axios, { type AxiosResponse } from 'axios'
+import type { DeleteOrderResponse, GetOrdersResponse, OrderData } from '@/types/order'
+import { db } from '@/firebase/firestore'
+import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore'
 
-import type { DeleteOrderResponse, GetOrdersResponse } from '@/types/order'
+// 獲取訂單列表
+export const apiGetOrders = async (params?: { page?: string }) => {
+  try {
+    const ordersRef = collection(db, 'orders')
+    const q = query(ordersRef, orderBy('create_at', 'desc'))
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const API_PATH = import.meta.env.VITE_API_PATH
+    const snapshot = await getDocs(q)
+    const orders: any[] = []
 
-const orderApi = axios.create({
-  baseURL: BASE_URL,
-})
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data()
+      // 確保 products 欄位存在，如果沒有就設為空物件
+      orders.push({
+        id: docSnap.id,
+        ...data,
+        products: data.products || {},
+        num: data.num || 0
+      })
+    })
 
-orderApi.interceptors.request.use(
-  (request) => {
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
+    // 簡單分頁
+    const page = parseInt(params?.page || '1')
+    const pageSize = 10
+    const startIndex = (page - 1) * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedOrders = orders.slice(startIndex, endIndex)
 
-    if (token) {
-      request.headers['Authorization'] = token
+    return {
+      data: {
+        success: true,
+        orders: paginatedOrders,
+        pagination: {
+          total_pages: Math.ceil(orders.length / pageSize),
+          current_page: page,
+          has_pre: page > 1,
+          has_next: endIndex < orders.length,
+          category: '',
+        },
+      },
     }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
+}
 
-    return request
-  },
-  (error) => {
-    return Promise.reject(error)
-  },
-)
+// 刪除訂單
+export const apiDeleteOrder = async (orderId: string) => {
+  try {
+    const orderRef = doc(db, 'orders', orderId)
+    await deleteDoc(orderRef)
 
-orderApi.interceptors.response.use(
-  (response) => {
-    return Promise.resolve(response)
-  },
-  (error) => {
-    return Promise.reject(error.response.data)
-  },
-)
-
-export const apiGetOrders = (params: {
-  page?: string
-}): Promise<AxiosResponse<GetOrdersResponse>> =>
-  orderApi.get(`/v2/api/${API_PATH}/admin/orders`, { params })
-
-export const apiDeleteOrder = (orderId: string): Promise<AxiosResponse<DeleteOrderResponse>> =>
-  orderApi.delete(`/v2/api/${API_PATH}/admin/order/${orderId}`)
+    return {
+      data: {
+        success: true,
+        message: '已刪除訂單',
+      },
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
+}

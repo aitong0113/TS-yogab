@@ -1,71 +1,100 @@
-import axios from 'axios'
-import type { AxiosResponse } from 'axios'
 import type {
   GetCouponsResponse,
   CreateCouponParams,
-  CreateCouponResponse,
   EditCouponParams,
-  EditCouponResponse,
-  DeleteCouponResponse,
+  CouponData,
 } from '@/types/coupon'
-
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const API_PATH = import.meta.env.VITE_API_PATH
-
-const couponApi = axios.create({
-  baseURL: BASE_URL,
-})
-
-couponApi.interceptors.request.use(
-  (request) => {
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
-
-    if (token) {
-      request.headers['Authorization'] = token
-    }
-
-    return request
-  },
-  (error) => {
-    return Promise.reject(error)
-  },
-)
-
-couponApi.interceptors.response.use(
-  (response) => {
-    return Promise.resolve(response)
-  },
-  (error) => {
-    return Promise.reject(error.response.data)
-  },
-)
+import { db } from '@/firebase/firestore'
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore'
 
 // 取得優惠券列表
-export const apiGetCoupons = (params: {
-    page?:string
-}):Promise<AxiosResponse<GetCouponsResponse>> => {
-  return couponApi.get(`/v2/api/${API_PATH}/admin/coupons`, {
-    params,
-  })
+export const apiGetCoupons = async (params?: { page?: string }) => {
+  try {
+    const couponsRef = collection(db, 'coupons')
+    const q = query(couponsRef, orderBy('title'))
+
+    const snapshot = await getDocs(q)
+    const coupons: CouponData[] = []
+
+    snapshot.forEach((docSnap) => {
+      coupons.push({ id: docSnap.id, ...docSnap.data() } as CouponData)
+    })
+
+    // 簡單分頁
+    const page = parseInt(params?.page || '1')
+    const pageSize = 10
+    const startIndex = (page - 1) * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedCoupons = coupons.slice(startIndex, endIndex)
+
+    return {
+      data: {
+        success: true,
+        coupons: paginatedCoupons,
+        pagination: {
+          total_pages: Math.ceil(coupons.length / pageSize),
+          current_page: page,
+          has_pre: page > 1,
+          has_next: endIndex < coupons.length,
+          category: '',
+        },
+      },
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 }
 
 // 建立優惠券
-export const apiCreateCoupon = (params: CreateCouponParams,):Promise<AxiosResponse<CreateCouponResponse>> => {
-  return couponApi.post(`/v2/api/${API_PATH}/admin/coupon`, {
-    data: params,
-  })
+export const apiCreateCoupon = async (params: CreateCouponParams) => {
+  try {
+    const couponsRef = collection(db, 'coupons')
+    const docRef = await addDoc(couponsRef, params)
+
+    return {
+      data: {
+        success: true,
+        message: '已新增優惠券',
+        coupon: { id: docRef.id, ...params },
+      },
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 }
 
 // 編輯優惠券
-export const apiEditCoupon = (params: EditCouponParams,):Promise<AxiosResponse<EditCouponResponse>> => {
-    // 解構參數 
-  const { id, data } = params
-  return couponApi.put(`/v2/api/${API_PATH}/admin/coupon/${id}`, {
-    data,
-  })
+export const apiEditCoupon = async (params: EditCouponParams) => {
+  try {
+    const { id, data } = params
+    const couponRef = doc(db, 'coupons', id)
+    await updateDoc(couponRef, data)
+
+    return {
+      data: {
+        success: true,
+        message: '已更新優惠券',
+        coupon: { id, ...data },
+      },
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 }
 
 // 刪除優惠券
-export const apiDeleteCoupon = (couponId: string) => {
-  return couponApi.delete(`/v2/api/${API_PATH}/admin/coupon/${couponId}`)
+export const apiDeleteCoupon = async (couponId: string) => {
+  try {
+    const couponRef = doc(db, 'coupons', couponId)
+    await deleteDoc(couponRef)
+
+    return {
+      data: {
+        success: true,
+        message: '已刪除優惠券',
+      },
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 }

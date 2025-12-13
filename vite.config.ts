@@ -47,7 +47,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // ---------------------------------------------
 export default defineConfig({
   // 📌 GitHub Pages 專案路徑（你的 repo 名稱）
-  base: '/TS-task3/',
+  base: '/TS-yogab/',
 
   // 📌 Vite Plugins
   plugins: [

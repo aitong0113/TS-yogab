@@ -23,8 +23,9 @@ const handleLogin = async () => {
     const { token, expired } = res.data
     document.cookie = `hexToken=${token};expires=${new Date(expired)};`
     router.push('/product-management')
-  } catch (error) {
-    alert('登入失敗')
+  } catch (error: any) {
+    console.error('登入錯誤:', error)
+    alert(`登入失敗：${error.message || '請檢查帳號密碼'}`)
   } finally {
     isProcessLogin.value = false
   }
@@ -38,17 +39,16 @@ const handleLogin = async () => {
         <div class="col-12 login-container ps-0 bg-white">
           <div class="row g-0">
             <div class="login-image-section col-lg-6 d-none d-lg-block">
-              <div class="d-flex justify-content-center align-items-center text-secondary">
-                <img
-                  src="https://images.unsplash.com/photo-1702754253690-a3d9e4e68511?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDEyMHx8fGVufDB8fHx8fA%3D%3D"
-                  alt=""
-                  class="img-fluid"
-                />
-              </div>
             </div>
             <div class="col-lg-6 d-flex flex-column justify-content-center p-5">
               <div class="text-center mb-4">
-                <h2 class="h3 font-bold text-gray-800">登入後台</h2>
+                <h2 class="h3 font-bold text-gray-800">靜心陰瑜伽後台管理</h2>
+                <p class="text-muted small">瑜伽用品商店後台系統</p>
+              </div>
+              <div class="alert alert-light border border-2 mb-4">
+                <h6 class="fw-bold mb-2">測試帳號（請使用以下帳號登入）</h6>
+                <p class="mb-1"><strong>帳號：</strong>admin@gmail.com</p>
+                <p class="mb-0"><strong>密碼：</strong>123456</p>
               </div>
               <form @submit.prevent="handleLogin">
                 <div class="mb-3">
@@ -81,7 +81,7 @@ const handleLogin = async () => {
                   >
                     登入
                   </button>
-                  <button type="button" class="btn btn-outline-dark rounded-lg py-2">回首頁</button>
+                  <a href="https://aitong0113.github.io/TS-yogaf/" target="_blank" class="btn btn-outline-dark rounded-lg py-2 text-center text-decoration-none">前往前台</a>
                 </div>
               </form>
             </div>
@@ -110,6 +110,10 @@ const handleLogin = async () => {
 }
 
 .login-image-section {
-  background-color: #e9ecef;
+  background-image: url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1350&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 600px;
 }
 </style>

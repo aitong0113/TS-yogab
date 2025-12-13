@@ -90,22 +90,28 @@ defineExpose({
           </p>
           <hr />
           <h6>訂購商品</h6>
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>商品名稱</th>
-                <th>數量</th>
-                <th>小計</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="productObj in props.order.products" :key="productObj.id">
-                <td>{{ productObj.product.title }}</td>
-                <td>{{ productObj.qty }}</td>
-                <td>{{ productObj.final_total.toLocaleString('zh-TW') }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div v-if="props.order.products && Object.keys(props.order.products).length > 0">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>商品名稱</th>
+                  <th>數量</th>
+                  <th>小計</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="productObj in props.order.products" :key="productObj.id">
+                  <td>{{ productObj.product.title }}</td>
+                  <td>{{ productObj.qty }}</td>
+                  <td>{{ productObj.final_total.toLocaleString('zh-TW') }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-else class="text-muted">
+            <p>此訂單沒有商品明細資料</p>
+            <p class="small">註：前台建立的訂單可能沒有包含商品詳情，只記錄了訂單總金額。</p>
+          </div>
           <hr />
           <p class="h5 text-end">
             <strong>總金額:</strong>

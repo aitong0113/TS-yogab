@@ -61,3 +61,19 @@ export type DeleteOrderResponse = {
   success: boolean
   message: string
 }
+
+// 訂單資料型別（與前台一致）
+export type OrderData = {
+  id: string
+  userId: string
+  user: {
+    name: string
+    email: string
+    tel: string
+    address: string
+  }
+  message?: string
+  total: number
+  create_at: number
+  is_paid: boolean
+}

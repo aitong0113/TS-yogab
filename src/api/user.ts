@@ -1,43 +1,33 @@
-import type { MessageResponse, UserLoginResponse } from '@/types/user'
-import axios, { type AxiosResponse } from 'axios'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { auth } from '@/firebase/firestore'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
+export const apiUserLogin = async (params: { username: string; password: string }) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, params.username, params.password)
+    const token = await userCredential.user.getIdToken()
 
-const userApi = axios.create({
-  baseURL: BASE_URL,
-})
-
-userApi.interceptors.request.use(
-  (request) => {
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
-
-    if (token) {
-      request.headers['Authorization'] = token
+    return {
+      data: {
+        success: true,
+        token: token,
+        expired: Date.now() + 3600000, // 1小時後過期
+        uid: userCredential.user.uid,
+      },
     }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
+}
 
-    return request
-  },
-  (error) => {
-    return Promise.reject(error)
-  },
-)
+export const apiCheckLoginStatus = async () => {
+  const user = auth.currentUser
+  if (user) {
+    return { data: { success: true, message: '已登入' } }
+  }
+  throw new Error('未登入')
+}
 
-userApi.interceptors.response.use(
-  (response) => {
-    return Promise.resolve(response)
-  },
-  (error) => {
-    return Promise.reject(error.response.data)
-  },
-)
-
-export const apiUserLogin = (params: {
-  username: string
-  password: string
-}): Promise<AxiosResponse<UserLoginResponse>> => userApi.post(`/v2/admin/signin`, params)
-
-export const apiCheckLoginStatus = (): Promise<AxiosResponse<MessageResponse>> =>
-  userApi.post(`/v2/api/user/check`)
-
-export const apiUserLogout = (): Promise<AxiosResponse<MessageResponse>> =>
-  userApi.post(`/v2/logout`)
+export const apiUserLogout = async () => {
+  await signOut(auth)
+  return { data: { success: true, message: '登出成功' } }
+}

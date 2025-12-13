@@ -4,7 +4,7 @@ import { sidebarData } from '@/constants'
 
 <template>
   <div class="sidebar d-flex flex-column">
-    <h4 class="text-white text-center mb-5">植感生活</h4>
+    <h4 class="text-white text-center mb-5">靜心陰瑜伽</h4>
     <nav class="nav nav-pills flex-column">
       <RouterLink
       :key="sidebarItem.path"
