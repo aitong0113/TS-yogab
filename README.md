@@ -6,7 +6,7 @@
 
 **使用 TypeScript + Vue 3 + Firebase 的後台管理系統**
 
-<a href="https://aitong0113.github.io/TS-yogab/" target="_blank"><img src="https://img.shields.io/badge/線上展示-8B7355?style=for-the-badge" alt="Live Demo"></a> <a href="https://github.com/aitong0113/TS-yogab" target="_blank"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github" alt="GitHub"></a>
+<a href="https://aitong0113.github.io/TS-yogab/" target="_blank"><img src="https://img.shields.io/badge/後台展示-8B7355?style=for-the-badge" alt="Backend Demo"></a> <a href="https://aitong0113.github.io/TS-yogaf/" target="_blank"><img src="https://img.shields.io/badge/前台展示-D4A574?style=for-the-badge" alt="Frontend Demo"></a> <a href="https://github.com/aitong0113/TS-yogab" target="_blank"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github" alt="GitHub"></a>
 
 </div>
 
