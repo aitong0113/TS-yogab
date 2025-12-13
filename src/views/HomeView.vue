@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-4">
     <h2 class="mb-4">數據總覽</h2>
-    
+
     <div class="row g-4">
       <!-- 今日訂單數 -->
       <div class="col-md-6 col-lg-3">
@@ -137,7 +137,7 @@ const loading = ref(true)
 
 const fetchStatistics = async () => {
   loading.value = true
-  
+
   try {
     // 獲取今天的開始時間（00:00:00）
     const today = new Date()
