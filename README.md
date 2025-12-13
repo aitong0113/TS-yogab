@@ -27,8 +27,8 @@
 
 **測試帳號**
 
-- Email: \`admin@gmail.com\`
-- Password: \`123456\`
+- Email: `admin@gmail.com`
+- Password: `123456`
 
 ---
 
@@ -59,7 +59,7 @@
 
 ## 專案結構
 
-\`\`\`
+```
 TS-yogab/
 ├── public/
 │   └── favicon.ico
@@ -108,7 +108,7 @@ TS-yogab/
 ├── package.json
 ├── tsconfig.json              # TypeScript 設定
 └── vite.config.ts             # Vite 設定
-\`\`\`
+```
 
 ---
 
@@ -173,10 +173,10 @@ TS-yogab/
 
 **Firebase Collections**
 
-- \`products\` - 商品資料
-- \`orders\` - 訂單資料（前台建立，後台查看）
-- \`coupons\` - 優惠券資料
-- \`carts\` - 購物車資料（前台專用）
+- `products` - 商品資料
+- `orders` - 訂單資料（前台建立，後台查看）
+- `coupons` - 優惠券資料
+- `carts` - 購物車資料（前台專用）
 
 ---
 
@@ -218,29 +218,29 @@ TS-yogab/
 
 ### 安裝依賴
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ### 開發環境
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 訪問 http://localhost:5174/TS-yogab/
 
 ### 建置生產版本
 
-\`\`\`bash
+```bash
 npm run build
-\`\`\`
+```
 
 ### 部署到 GitHub Pages
 
-\`\`\`bash
+```bash
 npm run deploy
-\`\`\`
+```
 
 ---
 
@@ -258,7 +258,7 @@ npm run deploy
 
 ### 3. 設定 Firestore 規則
 
-\`\`\`javascript
+```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -267,13 +267,13 @@ service cloud.firestore {
     }
   }
 }
-\`\`\`
+```
 
 ⚠️ **注意：** 生產環境需要更嚴格的安全規則
 
 ### 4. 設定 Storage 規則
 
-\`\`\`javascript
+```javascript
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -282,19 +282,19 @@ service firebase.storage {
     }
   }
 }
-\`\`\`
+```
 
 ### 5. 建立管理員帳號
 
 在 Firebase Authentication 中手動建立管理員帳號：
-- Email: \`admin@gmail.com\`
-- Password: \`123456\`
+- Email: `admin@gmail.com`
+- Password: `123456`
 
 ### 6. Firebase 配置
 
-在 \`src/firebase/firestore.ts\` 中設定 Firebase 配置：
+在 `src/firebase/firestore.ts` 中設定 Firebase 配置：
 
-\`\`\`typescript
+```typescript
 const firebaseConfig = {
   apiKey: "你的-api-key",
   authDomain: "你的專案.firebaseapp.com",
@@ -303,7 +303,7 @@ const firebaseConfig = {
   messagingSenderId: "你的sender-id",
   appId: "你的app-id"
 };
-\`\`\`
+```
 
 ---
 
@@ -321,7 +321,7 @@ const firebaseConfig = {
    - 依照角色設定不同權限
 
 2. **環境變數管理**
-   - 使用 \`.env\` 檔案管理 Firebase 配置
+   - 使用 `.env` 檔案管理 Firebase 配置
    - 不要將敏感資訊上傳至 GitHub
 
 3. **錯誤處理**
@@ -349,7 +349,6 @@ const firebaseConfig = {
 
 ---
 
-<div align="center">
 
 ### 作者
 
@@ -360,7 +359,5 @@ const firebaseConfig = {
 💌 GitHub: <a href="https://github.com/aitong0113" target="_blank">aitong0113</a>
 
 ---
-
-**Made with ❤️ for Yoga Lovers**
 
 </div>
