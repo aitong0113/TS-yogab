@@ -97,7 +97,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-lg">
             <div class="modal-header">
-            <h5 class="modal-title" id="couponModalLabel">新增優惠券</h5>
+            <h5 class="modal-title" id="couponModalLabel">{{ coupon.id ? '編輯優惠券' : '新增優惠券' }}</h5>
             <button
                 type="button"
                 class="btn-close"

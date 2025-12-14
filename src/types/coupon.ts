@@ -1,12 +1,12 @@
 // 優惠券基本型別
 export type CouponData = {
     id: string
-    // 在這裡加上其他型別定義 
-    title: string,
-    is_enabled: number,
-    percent: number,
-    due_date: number,
+    title: string
+    is_enabled: number
+    percent: number
+    due_date: number
     code: string
+    num: number
 }
 
 // 建立優惠券參數型別
@@ -46,7 +46,7 @@ export type GetCouponsResponse = {
     // coupons
     coupons: CouponData[]
     pagination: Pagination
-    messages: unknown[] 
+    messages: unknown[]
 }
 
 // 訊息回應型別

@@ -97,7 +97,7 @@ export const apiUploadImage = async (file) =>
 
 // TODO: 匯入型別定義
 // 提示：需要匯入 CreateProductParams, CreateProductResponse 等型別
-import type { CreateProductParams, CreateProductResponse, EditProductParams, EditProductResponse, DeleteProductResponse, UploadImageResponse, GetProductsResponse, ProductData } from '@/types/product'
+import type { CreateProductParams, EditProductParams, ProductData } from '@/types/product'
 import { db, storage } from '@/firebase/firestore'
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -139,8 +139,9 @@ export const apiGetProducts = async (params?: { page?: string; category?: string
         },
       },
     }
-  } catch (error: any) {
-    throw new Error(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) throw new Error(error.message)
+    throw error
   }
 }
 
@@ -157,8 +158,9 @@ export const apiCreateProduct = async (params: CreateProductParams) => {
         product: { id: docRef.id, ...params },
       },
     }
-  } catch (error: any) {
-    throw new Error(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) throw new Error(error.message)
+    throw error
   }
 }
 
@@ -176,8 +178,9 @@ export const apiEditProduct = async (params: EditProductParams) => {
         product: { id, ...data },
       },
     }
-  } catch (error: any) {
-    throw new Error(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) throw new Error(error.message)
+    throw error
   }
 }
 
@@ -193,8 +196,9 @@ export const apiDeleteProduct = async (productId: string) => {
         message: '已刪除產品',
       },
     }
-  } catch (error: any) {
-    throw new Error(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) throw new Error(error.message)
+    throw error
   }
 }
 
@@ -216,7 +220,8 @@ export const apiUploadImage = async (file: FormData) => {
         imageUrl: downloadURL,
       },
     }
-  } catch (error: any) {
-    throw new Error(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) throw new Error(error.message)
+    throw error
   }
 }

@@ -46,7 +46,7 @@ export const apiGetCoupons = async (params?: { page?: string }) => {
 }
 
 // 建立優惠券
-export const apiCreateCoupon = async (params: CreateCouponParams) => {
+export const apiCreateCoupon = async (params: CreateCouponParams): Promise<{ data: { success: boolean; message: string; coupon: import('@/types/coupon').CouponData } }> => {
   try {
     const couponsRef = collection(db, 'coupons')
     const docRef = await addDoc(couponsRef, params)
@@ -83,7 +83,7 @@ export const apiEditCoupon = async (params: EditCouponParams) => {
 }
 
 // 刪除優惠券
-export const apiDeleteCoupon = async (couponId: string) => {
+export const apiDeleteCoupon = async (couponId: string): Promise<{ data: { success: boolean; message: string } }> => {
   try {
     const couponRef = doc(db, 'coupons', couponId)
     await deleteDoc(couponRef)

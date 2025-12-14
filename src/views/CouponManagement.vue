@@ -37,7 +37,7 @@ const getCoupons = async () => {
 
     coupons.value = res.data.coupons
     pagination.value = res.data.pagination
-  } catch (error) {
+  } catch {
     alert('取得優惠券列表失敗')
   }
 }
@@ -58,31 +58,32 @@ const openModal = (coupon?: CouponData) => {
   }
 
   couponModalRef.value?.openModal(async (couponData: CouponData) => {
-    isLoading.value = true
-
-    try {
-      if (coupon) {
-        await apiEditCoupon({
-          id: couponData.id,
-          data: {
-            ...couponData,
-            is_enabled: Number(couponData.is_enabled),
-          },
+        couponModalRef.value?.openModal(async (couponData: CouponData) => {
+          isLoading.value = true
+          try {
+            if (coupon) {
+              await apiEditCoupon({
+                id: couponData.id,
+                data: {
+                  ...couponData,
+                  is_enabled: Number(couponData.is_enabled),
+                },
+              })
+            } else {
+              // 新增時排除 id
+              const { id, ...createParams } = couponData
+              await apiCreateCoupon({
+                ...createParams,
+                is_enabled: Number(couponData.is_enabled),
+              })
+            }
+          } catch {
+            alert('新增/編輯優惠券失敗')
+          } finally {
+            isLoading.value = false
+            getCoupons()
+          }
         })
-      } else {
-        await apiCreateCoupon({
-          ...couponData,
-          is_enabled: Number(couponData.is_enabled),
-        })
-      }
-    } catch (error) {
-      alert('新增/編輯優惠券失敗')
-    } finally {
-      isLoading.value = false
-      getCoupons()
-    }
-  })
-}
 
 const openDeleteModal = (couponId: string) => {
   deleteModalRef.value?.openModal(() => deleteCoupon(couponId))
@@ -91,7 +92,7 @@ const openDeleteModal = (couponId: string) => {
 const deleteCoupon = async (couponId: string) => {
   try {
     await apiDeleteCoupon(couponId)
-  } catch (error) {
+  } catch {
     alert('刪除優惠券失敗')
   } finally {
     getCoupons()
